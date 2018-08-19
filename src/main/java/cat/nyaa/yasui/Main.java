@@ -49,6 +49,7 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         disable(true);
+        enableAI();
     }
 
     public void disable(boolean saveConfig) {
