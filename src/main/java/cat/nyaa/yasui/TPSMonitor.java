@@ -16,10 +16,6 @@ public class TPSMonitor extends BukkitRunnable {
     }
 
     public double[] getTPS() {
-        if (plugin.config.use_essentials_tps && plugin.ess != null) {
-            double averageTPS = plugin.ess.getTimer().getAverageTPS();
-            return new double[]{averageTPS, averageTPS, averageTPS};
-        } else {
             try {
                 Object nmsServer = ReflectionUtils.getNMSClass("MinecraftServer").getMethod("getServer").invoke(null);
                 Field field = nmsServer.getClass().getField("recentTps");
@@ -33,7 +29,6 @@ public class TPSMonitor extends BukkitRunnable {
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
-        }
         return null;
     }
 

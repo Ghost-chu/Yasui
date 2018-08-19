@@ -1,7 +1,8 @@
 package cat.nyaa.yasui;
 
 import cat.nyaa.nyaacore.utils.ReflectionUtils;
-import com.earth2me.essentials.Essentials;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
@@ -25,7 +26,7 @@ public final class Main extends JavaPlugin {
     public CommandHandler commandHandler;
     public ArrayList<String> disableAIWorlds = new ArrayList<>();
     public TPSMonitor tpsMonitor;
-    public Essentials ess;
+    //public Essentials ess;
     public Set<UUID> noAIMobs = new HashSet<>();
     public EntityListener entityListener;
 
@@ -38,9 +39,9 @@ public final class Main extends JavaPlugin {
         commandHandler = new CommandHandler(this, this.i18n);
         getCommand("yasui").setExecutor(commandHandler);
         getCommand("yasui").setTabCompleter(commandHandler);
-        if (getServer().getPluginManager().getPlugin("Essentials") != null) {
-            this.ess = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
-        }
+//        if (getServer().getPluginManager().getPlugin("Essentials") != null) {
+//            this.ess = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
+//        }
         tpsMonitor = new TPSMonitor(this);
         entityListener = new EntityListener(this);
     }
@@ -63,12 +64,11 @@ public final class Main extends JavaPlugin {
     public void disableAI() {
         for (World world : getServer().getWorlds()) {
             if (config.ignored_world.contains(world.getName())) {
-                continue;
-            }
             if (world.getLivingEntities().size() >= this.config.world_entity) {
                 if (!disableAIWorlds.contains(world.getName())) {
                     disableAIWorlds.add(world.getName());
                     getLogger().info("disable entity ai in " + world.getName());
+                    Bukkit.broadcastMessage("§aYasui §b>>§d 已停用 §e"+world.getName()+" §d世界中所有区块生物总数超过 §e"+this.config.chunk_entity+" §d的区块的生物AI");
                 }
                 for (Chunk chunk : world.getLoadedChunks()) {
                     int entityCount = getLivingEntityCount(chunk);
@@ -82,6 +82,7 @@ public final class Main extends JavaPlugin {
                 }
             }
         }
+      }
     }
 
     public void enableAI() {
@@ -92,6 +93,7 @@ public final class Main extends JavaPlugin {
                 disableAIWorlds.remove(world.getName());
             }
             getLogger().info("enable entity ai in " + world.getName());
+            Bukkit.broadcastMessage("§aYasui §b>>§d 已启用 §e"+world.getName()+" §d世界中所有被停用的生物AI");
             for (Chunk chunk : world.getLoadedChunks()) {
                 for (Entity entity : chunk.getEntities()) {
                     if (entity instanceof LivingEntity) {
